@@ -1,0 +1,92 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Card {
+    private String symbol;
+    private String value;
+
+    public Card(String symbol, String value) {
+        this.symbol = symbol;
+        this.value = value;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void display() {
+        System.out.println("Card: " + value + " of " + symbol);
+    }
+}
+
+public class CardCollection {
+    public static void main(String[] args) {
+        List<Card> cards = new ArrayList<>();  // Using Collection (List)
+        Scanner sc = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("\nCard Collection System");
+            System.out.println("1. Add a Card");
+            System.out.println("2. Search Cards by Symbol");
+            System.out.println("3. Display All Cards");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1:
+                    // Add Card
+                    System.out.print("Enter Card Symbol (e.g., Hearts, Diamonds): ");
+                    String symbol = sc.nextLine();
+                    System.out.print("Enter Card Value (e.g., Ace, King, 2, 3): ");
+                    String value = sc.nextLine();
+                    cards.add(new Card(symbol, value));
+                    System.out.println("Card added successfully!");
+                    break;
+
+                case 2:
+                    // Search Cards by Symbol
+                    System.out.print("Enter Symbol to search (e.g., Hearts): ");
+                    String searchSymbol = sc.nextLine();
+                    boolean found = false;
+                    System.out.println("Cards with symbol '" + searchSymbol + "':");
+                    for (Card card : cards) {
+                        if (card.getSymbol().equalsIgnoreCase(searchSymbol)) {
+                            card.display();
+                            found = true;
+                        }
+                    }
+                    if (!found) System.out.println("No cards found for the given symbol.");
+                    break;
+
+                case 3:
+                    // Display All Cards
+                    if (cards.isEmpty()) {
+                        System.out.println("No cards available.");
+                    } else {
+                        System.out.println("All Cards:");
+                        for (Card card : cards) {
+                            card.display();
+                        }
+                    }
+                    break;
+
+                case 4:
+                    System.out.println("Exiting Card Collection System...");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice! Try again.");
+            }
+        } while (choice != 4);
+
+        sc.close();
+    }
+}
