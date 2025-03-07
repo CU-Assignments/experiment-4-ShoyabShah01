@@ -1,0 +1,73 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class TicketBookingSystem {
+    private List<Integer> availableSeats;
+
+    public TicketBookingSystem(int totalSeats) {
+        availableSeats = new ArrayList<>();
+        for (int i = 1; i <= totalSeats; i++) {
+            availableSeats.add(i); // Adding seats from 1 to totalSeats
+        }
+    }
+
+    // Synchronized method to prevent double booking
+    public synchronized boolean bookSeat(String user, boolean isVIP) {
+        if (availableSeats.isEmpty()) {
+            System.out.println(user + " (VIP: " + isVIP + ") - No seats available!");
+            return false;
+        }
+        
+        int seat = availableSeats.remove(0);
+        System.out.println(user + " (VIP: " + isVIP + ") booked Seat #" + seat);
+        return true;
+    }
+}
+
+// Runnable class for booking tickets
+class TicketBookingThread extends Thread {
+    private TicketBookingSystem bookingSystem;
+    private String user;
+    private boolean isVIP;
+
+    public TicketBookingThread(TicketBookingSystem system, String user, boolean isVIP) {
+        this.bookingSystem = system;
+        this.user = user;
+        this.isVIP = isVIP;
+    }
+
+    @Override
+    public void run() {
+        bookingSystem.bookSeat(user, isVIP);
+    }
+}
+
+public class TicketBookingApp {
+    public static void main(String[] args) {
+        TicketBookingSystem system = new TicketBookingSystem(5); // Total 5 seats
+
+        // Creating threads (VIP users have higher priority)
+        TicketBookingThread user1 = new TicketBookingThread(system, "User1", false);
+        TicketBookingThread vip1 = new TicketBookingThread(system, "VIP1", true);
+        TicketBookingThread user2 = new TicketBookingThread(system, "User2", false);
+        TicketBookingThread vip2 = new TicketBookingThread(system, "VIP2", true);
+        TicketBookingThread user3 = new TicketBookingThread(system, "User3", false);
+        TicketBookingThread vip3 = new TicketBookingThread(system, "VIP3", true); // Extra user
+
+        // Setting thread priorities (Higher priority for VIPs)
+        vip1.setPriority(Thread.MAX_PRIORITY);
+        vip2.setPriority(Thread.MAX_PRIORITY);
+        vip3.setPriority(Thread.MAX_PRIORITY);
+        user1.setPriority(Thread.MIN_PRIORITY);
+        user2.setPriority(Thread.MIN_PRIORITY);
+        user3.setPriority(Thread.MIN_PRIORITY);
+
+        // Starting threads
+        vip1.start();
+        vip2.start();
+        vip3.start(); // This may not get a seat since only 5 seats exist
+        user1.start();
+        user2.start();
+        user3.start();
+    }
+}
